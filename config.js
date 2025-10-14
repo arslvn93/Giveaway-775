@@ -91,6 +91,11 @@ const config = {
   "howToEnter": {
     "steps": [
       {
+        "icon": "fa-brands fa-square-instagram",
+        "title": "Follow My Instagram",
+        "description": "follow @ericareddy "
+      },
+      {
         "icon": "fas fa-edit",
         "title": "Fill Out the Form",
         "description": "Add your name and email. It takes under 30 seconds."
@@ -98,12 +103,7 @@ const config = {
       {
         "icon": "fas fa-check-circle",
         "title": "Answer Quick Questions",
-        "description": "Tell us about your home plans. It helps us serve local parents better."
-      },
-      {
-        "icon": "fas fa-trophy",
-        "title": "You're Entered!",
-        "description": "We will pick a random winner and email them after the deadline."
+        "description": "Tell us about you."
       }
     ],
     "highlights": [
@@ -161,7 +161,7 @@ const config = {
       },
       {
         "q": "When does it end?",
-        "a": "Entries close soon. The winner is drawn right after. Watch this page and our socials for dates."
+        "a": "Entries close on November 10th. The winner is drawn on November 11th. Watch this page and our socials for dates."
       }
     ],
     "tips": [],
@@ -188,7 +188,7 @@ const config = {
   },
   "modalQuestions": [
     {
-      "id": "q_auto_1760473048311_0",
+      "id": "q_auto_1760473219860_0",
       "questionText": "What do you like the most about your current home?",
       "options": [
         {
@@ -210,7 +210,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760473048311_1",
+      "id": "q_auto_1760473219860_1",
       "questionText": "Is a move on your radar in the near future?",
       "options": [
         {
@@ -232,7 +232,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760473048311_2",
+      "id": "q_auto_1760473219860_2",
       "questionText": "What’s your current housing situation?",
       "options": [
         {
