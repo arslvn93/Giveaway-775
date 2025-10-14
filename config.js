@@ -82,7 +82,7 @@ const config = {
         "text": "Choose a Strøm Spa location of your choice (subject to availability)"
       }
     ],
-    "name": "Parents Escape Giveaway — Strøm Spa Nordique Culinary Discovery for Two",
+    "name": "Parents Escape Giveaway. Strøm Spa Nordique Culinary Discovery for Two",
     "value": "$450 Value",
     "description": "Picture this: no kids, no chores, no rush. Just peace. You and your partner drift between hot and cold baths. You share warm food. You sip wine. You wear cozy robes. You talk. You breathe. You leave feeling new. This package is your easy path to rest and joy. Choose the Strøm Spa location that works best for you.",
     "limitedTimeOfferText": "Limited spots. Ends soon.",
@@ -188,7 +188,7 @@ const config = {
   },
   "modalQuestions": [
     {
-      "id": "q_auto_1760473553617_0",
+      "id": "q_auto_1760473607284_0",
       "questionText": "What do you like the most about your current home?",
       "options": [
         {
@@ -210,7 +210,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760473553617_1",
+      "id": "q_auto_1760473607284_1",
       "questionText": "Is a move on your radar in the near future?",
       "options": [
         {
@@ -232,7 +232,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760473553617_2",
+      "id": "q_auto_1760473607284_2",
       "questionText": "What’s your current housing situation?",
       "options": [
         {
