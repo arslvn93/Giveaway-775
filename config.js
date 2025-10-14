@@ -15,7 +15,7 @@ const config = {
     "name": "Parents Escape Giveaway — Strøm Spa Nordique",
     "successModalHeaderText": "You’re In the Running!",
     "successModalMainMessage": "Your entry for the <strong>Parents Spa Escape for Two at Strøm Spa</strong> is in. We will draw a random winner after the deadline and email them. Good luck and take care of you!",
-    "successModalEmailPrompt": "Watch your inbox (and spam) after the deadline—we’ll email the winner right away."
+    "successModalEmailPrompt": "Watch your inbox (and spam) after November 10th. We’ll email the winner right away."
   },
   "settings": {
     "confettiColors": [
@@ -188,7 +188,7 @@ const config = {
   },
   "modalQuestions": [
     {
-      "id": "q_auto_1760473219860_0",
+      "id": "q_auto_1760473246594_0",
       "questionText": "What do you like the most about your current home?",
       "options": [
         {
@@ -210,7 +210,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760473219860_1",
+      "id": "q_auto_1760473246594_1",
       "questionText": "Is a move on your radar in the near future?",
       "options": [
         {
@@ -232,7 +232,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760473219860_2",
+      "id": "q_auto_1760473246594_2",
       "questionText": "What’s your current housing situation?",
       "options": [
         {
