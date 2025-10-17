@@ -7,7 +7,7 @@ const config = {
   "giveaway": {
     "heroHeadline": "Win a <span class='highlight'>Parents Spa Escape for Two</span> at Strøm Spa Nordique!",
     "heroSubheadline": "Unplug. Relax. Eat well. Enjoy thermal baths, dinner for two, wine, robes, and a gift. A true break for busy parents. $450 value. Limited-time giveaway.",
-    "heroBackgroundImageUrl": " https://salesgenius.s3.ca-central-1.amazonaws.com/uploads/upload-STROM_IDS_ETE24_HD-34_WEB.webp",
+    "heroBackgroundImageUrl": "https://salesgenius.s3.ca-central-1.amazonaws.com/uploads/upload-STROM_IDS_ETE24_HD-34_WEB.webp",
     "promotionDates": "Enter now. Entries close November 10th. Winner announced on November 11.",
     "endDate": "2025-11-10T03:59:00.000Z",
     "heroCtaText": "Enter to Win Now!",
@@ -188,7 +188,7 @@ const config = {
   },
   "modalQuestions": [
     {
-      "id": "q_auto_1760716842090_0",
+      "id": "q_auto_1760717043824_0",
       "questionText": "What do you like the most about your current home?",
       "options": [
         {
@@ -210,7 +210,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760716842090_1",
+      "id": "q_auto_1760717043825_1",
       "questionText": "Is a move on your radar in the near future?",
       "options": [
         {
@@ -232,7 +232,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760716842090_2",
+      "id": "q_auto_1760717043825_2",
       "questionText": "What’s your current housing situation?",
       "options": [
         {
@@ -279,7 +279,7 @@ const config = {
     },
     "footerDisclaimer": "This giveaway is sponsored by Lisa Hall and is not affiliated with or endorsed by any restaurant, babysitting service, rideshare, or cinema brand. Contest runs Oct 14–Nov 10, 2025 (11:59 PM ET). One winner will be selected at random on Nov 11, 2025 from eligible entries. Must be 18+ and a Quebec resident to enter. One entry per person. No purchase necessary. Void where prohibited. Prizes are provided as prepaid funds/gift cards; brand choices are up to the winner and subject to availability and standard terms.",
     "organizerLogoUrl": "https://www.archetyperealtygroup.ca/wp-content/uploads/2023/08/logo_1_symbol-e1693999293251-768x441.png",
-    "secondaryLogoUrl": "data:image/png;base64,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",
+    "secondaryLogoUrl": "https://salesgenius.s3.ca-central-1.amazonaws.com/uploads/upload-m-logo-next.svg",
     "secondaryLogoAlt": "Brokerage Logo",
     "organizerName": "Lisa Hall",
     "brokerageName": "M Immobilier",
