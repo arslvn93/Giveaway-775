@@ -7,7 +7,7 @@ const config = {
   "giveaway": {
     "heroHeadline": "Win a <span class='highlight'>Parents Spa Escape for Two</span> at Strøm Spa Nordique!",
     "heroSubheadline": "Unplug. Relax. Eat well. Enjoy thermal baths, dinner for two, wine, robes, and a gift. A true break for busy parents. $450 value. Limited-time giveaway.",
-    "heroBackgroundImageUrl": "https://salesgenius.s3.ca-central-1.amazonaws.com/giveaways/generations/5trx90ct81rme0cswevvszk420.jpg",
+    "heroBackgroundImageUrl": "https://salesgenius.s3.ca-central-1.amazonaws.com/uploads/upload-StromSpa_SHEHiver24_HD-12-web-1-680x470.jpg",
     "promotionDates": "Enter now. Entries close November 10th. Winner announced on November 11.",
     "endDate": "2025-11-10T03:59:00.000Z",
     "heroCtaText": "Enter to Win Now!",
@@ -36,7 +36,7 @@ const config = {
   "prize": {
     "images": [
       {
-        "src": "https://salesgenius.s3.ca-central-1.amazonaws.com/uploads/upload-StromSpa_SHEHiver24_HD-12-web-1-680x470.jpg",
+        "src": "https://salesgenius.s3.ca-central-1.amazonaws.com/uploads/upload-CanadaBestDaySpa-Texte_1080x1080px_FR1.jpg",
         "alt": "Couple relaxing at Strøm Spa"
       },
       {
@@ -188,7 +188,7 @@ const config = {
   },
   "modalQuestions": [
     {
-      "id": "q_auto_1760716563742_0",
+      "id": "q_auto_1760716685857_0",
       "questionText": "What do you like the most about your current home?",
       "options": [
         {
@@ -210,7 +210,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760716563742_1",
+      "id": "q_auto_1760716685858_1",
       "questionText": "Is a move on your radar in the near future?",
       "options": [
         {
@@ -232,7 +232,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760716563742_2",
+      "id": "q_auto_1760716685858_2",
       "questionText": "What’s your current housing situation?",
       "options": [
         {
