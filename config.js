@@ -36,8 +36,8 @@ const config = {
   "prize": {
     "images": [
       {
-        "src": "https://salesgenius.s3.ca-central-1.amazonaws.com/giveaways/generations/btyetjft5drm80cswevvv2r0z8.jpg",
-        "alt": "Couple relaxing in outdoor thermal baths at Strøm Spa"
+        "src": "https://salesgenius.s3.ca-central-1.amazonaws.com/uploads/upload-StromSpa_SHEHiver24_HD-12-web-1-680x470.jpg",
+        "alt": "Couple relaxing at Strøm Spa"
       },
       {
         "src": "https://salesgenius.s3.ca-central-1.amazonaws.com/giveaways/generations/b8qm6faqt5rme0cswewayjxrcr.jpg",
@@ -188,7 +188,7 @@ const config = {
   },
   "modalQuestions": [
     {
-      "id": "q_auto_1760474479937_0",
+      "id": "q_auto_1760716563742_0",
       "questionText": "What do you like the most about your current home?",
       "options": [
         {
@@ -210,7 +210,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760474479937_1",
+      "id": "q_auto_1760716563742_1",
       "questionText": "Is a move on your radar in the near future?",
       "options": [
         {
@@ -232,7 +232,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760474479937_2",
+      "id": "q_auto_1760716563742_2",
       "questionText": "What’s your current housing situation?",
       "options": [
         {
