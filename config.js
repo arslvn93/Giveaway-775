@@ -1,7 +1,7 @@
 const config = {
   "meta": {
     "pageTitle": "Win a $450 Parents Spa Escape at Strøm Spa",
-    "navBrandLogoText": "Lisa Hall",
+    "navBrandLogoText": "Archetype Realty Group",
     "privacyPolicyLink": "https://www.mimmobilier.com/privacy-policy"
   },
   "giveaway": {
@@ -188,7 +188,7 @@ const config = {
   },
   "modalQuestions": [
     {
-      "id": "q_auto_1760726245935_0",
+      "id": "q_auto_1760727476038_0",
       "questionText": "What do you like the most about your current home?",
       "options": [
         {
@@ -210,7 +210,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760726245935_1",
+      "id": "q_auto_1760727476038_1",
       "questionText": "Is a move on your radar in the near future?",
       "options": [
         {
@@ -232,7 +232,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760726245935_2",
+      "id": "q_auto_1760727476038_2",
       "questionText": "What’s your current housing situation?",
       "options": [
         {
