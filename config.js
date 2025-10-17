@@ -188,7 +188,7 @@ const config = {
   },
   "modalQuestions": [
     {
-      "id": "q_auto_1760717043824_0",
+      "id": "q_auto_1760717085751_0",
       "questionText": "What do you like the most about your current home?",
       "options": [
         {
@@ -210,7 +210,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760717043825_1",
+      "id": "q_auto_1760717085751_1",
       "questionText": "Is a move on your radar in the near future?",
       "options": [
         {
@@ -232,7 +232,7 @@ const config = {
       ]
     },
     {
-      "id": "q_auto_1760717043825_2",
+      "id": "q_auto_1760717085751_2",
       "questionText": "What’s your current housing situation?",
       "options": [
         {
@@ -280,8 +280,8 @@ const config = {
     "footerDisclaimer": "This giveaway is sponsored by Lisa Hall and is not affiliated with or endorsed by any restaurant, babysitting service, rideshare, or cinema brand. Contest runs Oct 14–Nov 10, 2025 (11:59 PM ET). One winner will be selected at random on Nov 11, 2025 from eligible entries. Must be 18+ and a Quebec resident to enter. One entry per person. No purchase necessary. Void where prohibited. Prizes are provided as prepaid funds/gift cards; brand choices are up to the winner and subject to availability and standard terms.",
     "organizerLogoUrl": "https://www.archetyperealtygroup.ca/wp-content/uploads/2023/08/logo_1_symbol-e1693999293251-768x441.png",
     "secondaryLogoUrl": "https://salesgenius.s3.ca-central-1.amazonaws.com/uploads/upload-m-logo-next.svg",
-    "secondaryLogoAlt": "Brokerage Logo",
-    "organizerName": "Lisa Hall",
+    "secondaryLogoAlt": "M Immobilier Brokerage Logo",
+    "organizerName": "Lisa Hall Archetype Realty Group",
     "brokerageName": "M Immobilier",
     "address": "147 Avenue Cartier Suite 400. Pointe-Claire QC H95 4R9",
     "email": "lisahallmontreal@gmail.com",
