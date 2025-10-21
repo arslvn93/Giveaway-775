@@ -152,6 +152,30 @@ fbq('track', 'PageView');
         .nav-links.nav-open { right: 0; }
         .nav-links li a { display: block; padding: 0.75rem 0.5rem; font-weight: 500; color: var(--text-color-medium-theme); transition: color 0.3s ease; border-radius: var(--border-radius-s); }
         .nav-links li a:hover, .nav-links li a.active { color: var(--primary-color-theme); background-color: rgba(var(--primary-color-theme), 0.1); }
+        
+        /* Language Toggle Button */
+        .language-toggle {
+            background: var(--card-bg-color-theme);
+            border: 1px solid var(--glass-border-color-theme);
+            border-radius: var(--border-radius-s);
+            color: var(--text-color-dark-theme);
+            font-weight: 600;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            min-width: 50px;
+            margin-left: 0.5rem;
+        }
+        .language-toggle:hover {
+            background: var(--primary-color-theme);
+            color: #ffffff;
+            border-color: var(--primary-color-theme);
+            transform: translateY(-1px);
+        }
+        .language-toggle:active {
+            transform: translateY(0);
+        }
 
         /* --- SECTION STYLING --- */
         .section {
@@ -1068,11 +1092,14 @@ body.theme-pastel #rules::before {
                 <i class="fas fa-bars"></i>
             </button>
             <ul id="navLinksList" class="nav-links">
-                <li><a href="#hero" class="active">Home</a></li>
-                <li><a href="#prize-details">Prize</a></li>
-                <li><a href="#how-to-enter">How to Enter</a></li>
-                <li><a href="#entry-form">Enter</a></li>
-                <li><a href="#rules">Rules</a></li>
+                <li><a href="#hero" class="active" data-translate="nav.home">Home</a></li>
+                <li><a href="#prize-details" data-translate="nav.prize">Prize</a></li>
+                <li><a href="#how-to-enter" data-translate="nav.howToEnter">How to Enter</a></li>
+                <li><a href="#entry-form" data-translate="nav.enter">Enter</a></li>
+                <li><a href="#rules" data-translate="nav.rules">Rules</a></li>
+                <li><button id="languageToggle" class="language-toggle" aria-label="Switch language">
+                    <span class="lang-text">EN</span>
+                </button></li>
             </ul>
         </div>
     </nav>
@@ -1102,7 +1129,7 @@ body.theme-pastel #rules::before {
         <section id="prize-details" class="section">
             <div class="container">
                 <div class="content-card">
-                    <h2 class="section-title">Prize Details</h2>
+                    <h2 class="section-title" id="prizeDetailsTitle">Prize Details</h2>
                     <p class="section-subtitle" id="prizeLimitedOffer"></p>
                     <div class="prize-layout-wrapper">
                         <div class="prize-image-content">
@@ -1135,8 +1162,8 @@ body.theme-pastel #rules::before {
         <section id="how-to-enter" class="section">
             <div class="container">
                 <div class="content-card" style="margin-bottom: 1.5rem;"> <!-- Added wrapper card for title/subtitle -->
-                    <h2 class="section-title">How to Enter</h2>
-                    <p class="section-subtitle" style="margin-bottom: 0;">It's super easy to enter! Just follow these simple steps.</p>
+                    <h2 class="section-title" id="howToEnterTitle">How to Enter</h2>
+                    <p class="section-subtitle" id="howToEnterSubtitle" style="margin-bottom: 0;">It's super easy to enter! Just follow these simple steps.</p>
                 </div>
                 <div class="content-card">
                     <div class="steps-grid" id="howToEnterSteps"></div>
@@ -1155,7 +1182,7 @@ body.theme-pastel #rules::before {
                             <!-- Background image will be set by JavaScript -->
                         </div>
                         <div class="entry-form-content">
-                            <h2 class="section-title">Enter Now!</h2>
+                            <h2 class="section-title" id="entryFormTitle">Enter Now!</h2>
                             <p class="section-subtitle" id="entryFormSubtitle">Don't miss your chance to win.</p>
                             <p class="text-center" id="entryFormCount"></p>
                             
@@ -1223,7 +1250,7 @@ body.theme-pastel #rules::before {
         <section id="rules" class="section">
             <div class="container">
                 <div class="content-card" style="margin-bottom: 1.5rem;"> <!-- Added wrapper card for title/subtitle -->
-                    <h2 class="section-title">Rules & Eligibility</h2>
+                    <h2 class="section-title" id="rulesTitle">Rules & Eligibility</h2>
                     <p class="section-subtitle" style="margin-bottom: 0;" id="rulesFinePrintText">Please read the fine print before entering.</p>
                 </div>
                 <div class="content-card">
@@ -1336,6 +1363,121 @@ body.theme-pastel #rules::before {
             const modalFinalStep = document.getElementById('modal-step-final');
             const myConfettiInstance = (typeof confetti === 'function' && document.getElementById('confetti-canvas'))
                 ? confetti.create(document.getElementById('confetti-canvas'), { resize: true, useWorker: true }) : null;
+
+            // --- Language Management ---
+            let currentLanguage = localStorage.getItem('language') || 'en';
+            const languageToggle = document.getElementById('languageToggle');
+            
+            // Language helper functions
+            function getCurrentLanguage() {
+                return currentLanguage;
+            }
+            
+            function setLanguage(lang) {
+                currentLanguage = lang;
+                localStorage.setItem('language', lang);
+                updateLanguageToggle();
+                updatePageContent();
+            }
+            
+            function toggleLanguage() {
+                const newLang = currentLanguage === 'en' ? 'fr' : 'en';
+                setLanguage(newLang);
+                // Hard refresh the page to ensure all content is properly loaded
+                window.location.reload();
+            }
+            
+            function updateLanguageToggle() {
+                if (languageToggle) {
+                    const langText = languageToggle.querySelector('.lang-text');
+                    if (langText) {
+                        langText.textContent = currentLanguage.toUpperCase();
+                    }
+                }
+            }
+            
+            function getTranslatedText(obj, fallback = '') {
+                if (!obj) return fallback;
+                if (typeof obj === 'string') return obj; // Backward compatibility
+                if (typeof obj === 'object' && obj[currentLanguage]) {
+                    return obj[currentLanguage];
+                }
+                if (typeof obj === 'object' && obj['en']) {
+                    return obj['en']; // Fallback to English
+                }
+                return fallback;
+            }
+            
+            function updatePageContent() {
+                // Update HTML lang attribute
+                document.documentElement.lang = currentLanguage;
+                
+                // Update section titles
+                setText('prizeDetailsTitle', getTranslatedText(config.sections?.prizeDetails));
+                setText('howToEnterTitle', getTranslatedText(config.sections?.howToEnter));
+                setText('howToEnterSubtitle', getTranslatedText(config.sections?.howToEnterSubtitle));
+                setText('entryFormTitle', getTranslatedText(config.sections?.enterNow));
+                setText('rulesTitle', getTranslatedText(config.sections?.rulesEligibility));
+                
+                // Update navigation items
+                const navElements = document.querySelectorAll('[data-translate]');
+                console.log('Found nav elements:', navElements.length);
+                navElements.forEach(element => {
+                    const key = element.getAttribute('data-translate');
+                    console.log('Processing element with key:', key);
+                    if (key.startsWith('nav.')) {
+                        const navKey = key.replace('nav.', '');
+                        const translatedText = getTranslatedText(config.nav?.[navKey]);
+                        console.log('Nav key:', navKey, 'Translated text:', translatedText);
+                        if (translatedText) {
+                            element.textContent = translatedText;
+                        }
+                    }
+                });
+                
+                // Update all content that uses translations
+                populateSimpleData();
+                populateConsentText(); // Update consent text with new language
+                updateModalContent();
+            }
+            
+            // Create placeholder functions for compatibility
+            function populateHero() {
+                populateSimpleData();
+            }
+            
+            function populatePrize() {
+                // Prize content is handled in populateSimpleData
+            }
+            
+            function populateHowToEnter() {
+                // How to enter content is handled in populateSimpleData
+            }
+            
+            function populateEntryForm() {
+                // Entry form content is handled in populateSimpleData
+            }
+            
+            function populateFooter() {
+                populateNewFooterData();
+            }
+            
+            function populateRules() {
+                // Rules content is handled in populateSimpleData
+            }
+            
+            function updateModalContent() {
+                try {
+                    if (config.giveaway) {
+                        setHTML('modalHeader', getTranslatedText(config.giveaway.successModalHeaderText));
+                        setText('modalGiveawayName', getTranslatedText(getTranslatedText(config.giveaway.name)));
+                        setHTML('modalMainMessage', getTranslatedText(config.giveaway.successModalMainMessage)?.replace('[GiveawayName]', getTranslatedText(getTranslatedText(config.giveaway.name)) || "this giveaway"));
+                        setHTML('modalEmailPrompt', getTranslatedText(config.giveaway.successModalEmailPrompt));
+                    }
+                } catch (e) {
+                    console.error("Err Modal:", e);
+                }
+            }
 
             // --- Theme Management ---
             function applyTheme(theme) {
@@ -1534,12 +1676,12 @@ body.theme-pastel #rules::before {
                 }, 10000);
             })();
             function populateSocialIcons(containerId, socialLinks) {
-                 const container = document.getElementById(containerId); if (!container) { /* console.warn(`Social container '${containerId}' not found.`); */ return; } container.innerHTML = ''; const platformIcons = { facebook: 'fab fa-facebook-f', instagram: 'fab fa-instagram', twitter: 'fab fa-twitter', pinterest: 'fab fa-pinterest-p'}; let shareUrl = window.location.href; let shareText = encodeURIComponent((config.giveaway?.name ? `Check out the ${config.giveaway.name} giveaway!` : "Check out this awesome giveaway!")); if(socialLinks && typeof socialLinks === 'object'){ for (const platform in socialLinks) { let url = socialLinks[platform]; if (platform === 'facebook' && url === "#") url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`; if (platform === 'twitter' && url === "#") url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${shareText}`; if (url && url !== "") { const iconClass = platformIcons[platform]; if (iconClass) { const link = document.createElement('a'); link.href = url; link.target = "_blank"; link.rel = "noopener noreferrer"; link.setAttribute('aria-label', platform); link.innerHTML = `<i class="${iconClass}"></i>`; container.appendChild(link); }}}}
+                 const container = document.getElementById(containerId); if (!container) { /* console.warn(`Social container '${containerId}' not found.`); */ return; } container.innerHTML = ''; const platformIcons = { facebook: 'fab fa-facebook-f', instagram: 'fab fa-instagram', twitter: 'fab fa-twitter', pinterest: 'fab fa-pinterest-p'}; let shareUrl = window.location.href; let shareText = encodeURIComponent((config.giveaway?.name ? `Check out the ${getTranslatedText(config.giveaway.name)} giveaway!` : "Check out this awesome giveaway!")); if(socialLinks && typeof socialLinks === 'object'){ for (const platform in socialLinks) { let url = socialLinks[platform]; if (platform === 'facebook' && url === "#") url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`; if (platform === 'twitter' && url === "#") url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${shareText}`; if (url && url !== "") { const iconClass = platformIcons[platform]; if (iconClass) { const link = document.createElement('a'); link.href = url; link.target = "_blank"; link.rel = "noopener noreferrer"; link.setAttribute('aria-label', platform); link.innerHTML = `<i class="${iconClass}"></i>`; container.appendChild(link); }}}}
             }
 
             // --- Typewriter Effect for Hero ---
             function typeWriter() {
-                const textToType = config.giveaway?.heroHeadline || "Welcome!"; let i = 0; const speed = 40;
+                const textToType = getTranslatedText(config.giveaway?.heroHeadline) || "Welcome!"; let i = 0; const speed = 40;
                 if (!heroTitleElement) { if (heroSection) heroSection.classList.add('content-loaded'); console.error("Hero title element not found."); return; }
                 heroTitleElement.innerHTML = ''; heroTitleElement.classList.add('typing'); heroTitleElement.style.opacity = '1';
                 function type() {
@@ -1550,14 +1692,17 @@ body.theme-pastel #rules::before {
             // --- Populate Data ---
             function populateSimpleData() {
                 // console.log("Populating data..."); if (!config) { return; }
-                try { document.title = config.meta?.pageTitle || "Giveaway"; setText('navBrandLogo', config.meta?.navBrandLogoText); } catch (e) { console.error("Err Meta:", e); }
+                try { 
+                    document.title = getTranslatedText(config.meta?.pageTitle) || "Giveaway"; 
+                    setText('navBrandLogo', getTranslatedText(config.meta?.navBrandLogoText)); 
+                } catch (e) { console.error("Err Meta:", e); }
                 try {
                     if (config.giveaway) {
-                        setText('heroSubtitle', config.giveaway.heroSubheadline);
-                        setText('heroPromotionDates', config.giveaway.promotionDates);
+                        setText('heroSubtitle', getTranslatedText(config.giveaway.heroSubheadline));
+                        setText('heroPromotionDates', getTranslatedText(config.giveaway.promotionDates));
                         const hCta = document.getElementById('heroCta');
                         if (hCta && config.giveaway.heroCtaText) {
-                            hCta.innerHTML = `${config.giveaway.heroCtaText} <i class="fas fa-arrow-right"></i>`;
+                            hCta.innerHTML = `${getTranslatedText(config.giveaway.heroCtaText)} <i class="fas fa-arrow-right"></i>`;
                         }
 
                         if (heroSection && config.giveaway.heroBackgroundImageUrl && config.giveaway.heroBackgroundImageUrl.trim() !== '') {
@@ -1588,7 +1733,15 @@ function populateConsentText() {
     if (consentLabel && config) {
         const brokerageName = config.footerContact?.brokerageName || "the brokerage";
         const privacyPolicyLink = config.meta?.privacyPolicyLink || "#";
-        consentLabel.innerHTML = `I agree to be contacted by ${brokerageName} via call, email, and text. To opt-out, you can reply ‘stop’ at any time or click the unsubscribe link in the emails. Message and data rates may apply. <a href="${privacyPolicyLink}" target="_blank" style="color: var(--primary-color-theme); text-decoration: underline;">Privacy Policy</a>.`;
+        const consentText = getTranslatedText(config.consent?.text);
+        if (consentText) {
+            consentLabel.innerHTML = consentText
+                .replace('{brokerageName}', brokerageName)
+                .replace('{privacyPolicyLink}', privacyPolicyLink);
+        } else {
+            // Fallback to old logic if translation not available
+            consentLabel.innerHTML = `I agree to be contacted by ${brokerageName} via call, email, and text. To opt-out, you can reply 'stop' at any time or click the unsubscribe link in the emails. Message and data rates may apply. <a href="${privacyPolicyLink}" target="_blank" style="color: var(--primary-color-theme); text-decoration: underline;">Privacy Policy</a>.`;
+        }
     }
 }
 
@@ -1622,13 +1775,13 @@ function populateNewFooterData() {
     }
 
     // Populate Organizer Name (used as Brokerage in example)
-    setText('newFooterOrganizerName', fc.organizerName);
+    setText('newFooterOrganizerName', getTranslatedText(fc.organizerName));
     
     // Populate Brokerage Name (if different from Organizer Name)
     // Assuming fc.brokerageName holds this, or it could be part of organizerName.
     // For now, let's assume it's a separate field or can be combined.
     // If fc.brokerageName exists, use it, otherwise, it might be part of fc.organizerName or a placeholder.
-    setText('newFooterBrokerageName', fc.brokerageName || "Your Brokerage Name");
+    setText('newFooterBrokerageName', getTranslatedText(fc.brokerageName) || "Your Brokerage Name");
 
 
 
@@ -1636,7 +1789,7 @@ function populateNewFooterData() {
     const addressEl = document.getElementById('newFooterAddress');
     if (addressEl && fc.address) {
         // Assuming addressEl is a <p> and we want to set its text content including the icon
-        addressEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${fc.address}`;
+        addressEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${getTranslatedText(fc.address)}`;
     } else if (addressEl) {
         addressEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> Organizer Address Placeholder`; // Fallback
     }
@@ -1653,7 +1806,7 @@ function populateNewFooterData() {
     const agent = fc.agentContact; // Assuming agent details are in config.footerContact.agentContact
     if (agent) {
         setText('newFooterAgentName', agent.name || "Agent Name Placeholder");
-        setText('newFooterAgentTitle', agent.title || "Agent Title Placeholder");
+        setText('newFooterAgentTitle', getTranslatedText(agent.title) || "Agent Title Placeholder");
 
         const agentPhoneLinkEl = document.getElementById('newFooterAgentPhoneLink');
         if (agentPhoneLinkEl && agent.phone) {
@@ -1706,7 +1859,7 @@ function populateNewFooterData() {
     // console.log("New footer data population attempt complete.");
 
     // Populate Footer Disclaimer
-    setText('footerTopDisclaimer', fc.footerDisclaimer || "Important legal disclaimer text will go here.");
+    setText('footerTopDisclaimer', getTranslatedText(fc.footerDisclaimer) || "Important legal disclaimer text will go here.");
 }
 // --- Giveaway Question Modal Logic ---
             const questionModalOverlay = document.getElementById('questionModalOverlay');
@@ -1823,12 +1976,12 @@ function populateNewFooterData() {
                     stepDiv.id = `giveaway-modal-step-${questionData.id}`;
                     // Corrected template literal:
                     stepDiv.innerHTML = `
-                        <p class="question-text" id="giveawayModalStepTitle-${questionData.id}">${questionData.questionText}</p>
+                        <p class="question-text" id="giveawayModalStepTitle-${questionData.id}">${getTranslatedText(questionData.questionText)}</p>
                         <div class="modal-options">
                             ${questionData.options.map(option => `
                                 <button type="button" class="modal-option-btn"
                                         data-step="${stepIndex}" data-question-id="${questionData.id}" data-answer="${option.value}">
-                                    ${option.text}
+                                    ${getTranslatedText(option.text)}
                                 </button>
                             `).join('')}
                         </div>
@@ -1916,7 +2069,7 @@ function populateNewFooterData() {
                 try {
     if (config.prize) {
         if (config.prize.limitedTimeOfferText) {
-            setText('prizeLimitedOffer', config.prize.limitedTimeOfferText);
+            setText('prizeLimitedOffer', getTranslatedText(config.prize.limitedTimeOfferText));
         } else {
             const el = document.getElementById('prizeLimitedOffer');
             if (el) el.style.display = 'none';
@@ -1941,23 +2094,23 @@ function populateNewFooterData() {
             if (pThumbs) pThumbs.style.display = 'none';
         }
 
-        setText('prizeName', config.prize.name);
-        setText('prizeValue', config.prize.value);
-        setHTML('prizeDescription', config.prize.description);
+        setText('prizeName', getTranslatedText(config.prize.name));
+        setText('prizeValue', getTranslatedText(config.prize.value));
+        setHTML('prizeDescription', getTranslatedText(config.prize.description));
 
         const incList = document.querySelector('#prizeIncludedList ul');
         if (incList && config.prize.includedItems) {
             incList.innerHTML = '';
             config.prize.includedItems.forEach(it => {
                 const li = document.createElement('li');
-                li.innerHTML = `<i class="${it.icon||'fas fa-check'}"></i> <span>${it.text}</span>`;
+                li.innerHTML = `<i class="${it.icon||'fas fa-check'}"></i> <span>${getTranslatedText(it.text)}</span>`;
                 incList.appendChild(li);
             });
         }
 
         const pCta = document.getElementById('prizeCta');
         if (pCta && config.prize.ctaButtonText) {
-            pCta.innerHTML = `${config.prize.ctaButtonText} <i class="fas fa-gift"></i>`;
+            pCta.innerHTML = `${getTranslatedText(config.prize.ctaButtonText)} <i class="fas fa-gift"></i>`;
         }
     }
 } catch (e) {
@@ -1983,7 +2136,7 @@ try {
         if (stepsC && config.howToEnter.steps) {
             stepsC.innerHTML = '';
             config.howToEnter.steps.forEach(s => {
-                stepsC.innerHTML += `<div class="step-item"><i class="${s.icon || 'fas fa-info-circle'}"></i><h3>${s.title}</h3><p>${s.description}</p></div>`;
+                stepsC.innerHTML += `<div class="step-item"><i class="${s.icon || 'fas fa-info-circle'}"></i><h3>${getTranslatedText(s.title)}</h3><p>${getTranslatedText(s.description)}</p></div>`;
             });
         }
 
@@ -1991,7 +2144,7 @@ try {
         if (hlC && config.howToEnter.highlights) {
             hlC.innerHTML = '';
             config.howToEnter.highlights.forEach(h => {
-                hlC.innerHTML += `<li class="highlight-item"><i class="${h.icon || 'fas fa-star'}"></i> <span>${h.text}</span></li>`;
+                hlC.innerHTML += `<li class="highlight-item"><i class="${h.icon || 'fas fa-star'}"></i> <span>${getTranslatedText(h.text)}</span></li>`;
             });
         }
     }
@@ -2001,15 +2154,15 @@ try {
 
 try {
     if (config.entryForm) {
-        setText('entryFormSubtitle', config.entryForm.subtitle);
-        setText('entryFormCount', config.entryForm.entryCountText);
+        setText('entryFormSubtitle', getTranslatedText(config.entryForm.subtitle));
+        setText('entryFormCount', getTranslatedText(config.entryForm.entryCountText));
 
         const subBtnTxt = submitButton?.querySelector('.button-text');
         if (subBtnTxt) {
             subBtnTxt.textContent = "Next"; // Changed to "Next" as per new flow
         }
 
-        setText('entryFormSocialPrompt', config.entryForm.socialSharePrompt);
+        setText('entryFormSocialPrompt', getTranslatedText(config.entryForm.socialSharePrompt));
         populateSocialIcons('entryFormSocialIcons', config.entryForm.sharePlatforms);
 
     }
@@ -2022,17 +2175,17 @@ try {
         // Populate fine print text
         const finePrintEl = document.getElementById('rulesFinePrintText');
         if (finePrintEl && config.rules.finePrintText) {
-            setText('rulesFinePrintText', config.rules.finePrintText);
+            setText('rulesFinePrintText', getTranslatedText(config.rules.finePrintText));
         }
 
         const fairEl = document.getElementById('rulesFairSelection');
         if (fairEl && config.rules.fairSelectionInfo) {
-            setHTML('rulesFairSelection', `<h3>${config.rules.fairSelectionInfo.title || ''}</h3><p>${config.rules.fairSelectionInfo.text || ''}</p>`);
+            setHTML('rulesFairSelection', `<h3>${getTranslatedText(config.rules.fairSelectionInfo?.title) || ''}</h3><p>${getTranslatedText(config.rules.fairSelectionInfo?.text) || ''}</p>`);
         }
 
         const noticeEl = document.getElementById('rulesImportantNotice');
         if (noticeEl && config.rules.importantNotice) {
-            setHTML('rulesImportantNotice', `<h3>${config.rules.importantNotice.title || ''}</h3><p>${config.rules.importantNotice.text || ''}</p>`);
+            setHTML('rulesImportantNotice', `<h3>${getTranslatedText(config.rules.importantNotice?.title) || ''}</h3><p>${getTranslatedText(config.rules.importantNotice?.text) || ''}</p>`);
         }
 
         const faqC = document.getElementById('rulesFaqList');
@@ -2041,7 +2194,7 @@ try {
             config.rules.faq.forEach(it => {
                 const li = document.createElement('li');
                 li.className = 'faq-item';
-                li.innerHTML = `<div class="faq-question">${it.q}</div><div class="faq-answer">${it.a}</div>`;
+                li.innerHTML = `<div class="faq-question">${getTranslatedText(it.q)}</div><div class="faq-answer">${getTranslatedText(it.a)}</div>`;
                 faqC.appendChild(li);
             });
 
@@ -2092,7 +2245,7 @@ try {
             fLogo.style.display = 'none';
         }
 
-        setText('footerOrganizerName', config.footerContact.organizerName);
+        setText('footerOrganizerName', getTranslatedText(config.footerContact.organizerName));
 
         const emL = document.getElementById('footerContactEmailLink');
         const emS = document.getElementById('footerContactEmail');
@@ -2108,7 +2261,7 @@ try {
             phS.textContent = config.footerContact.phone;
         }
 
-        setText('footerOrganizerAddress', config.footerContact.address);
+        setText('footerOrganizerAddress', getTranslatedText(config.footerContact.address));
 
         populateSocialIcons('footerSocialIcons', config.footerContact.social);
 
@@ -2123,10 +2276,10 @@ try {
 
 try {
     if (config.giveaway) {
-        setHTML('modalHeader', config.giveaway.successModalHeaderText);
-        setText('modalGiveawayName', config.giveaway.name);
-        setHTML('modalMainMessage', config.giveaway.successModalMainMessage?.replace('[GiveawayName]', config.giveaway.name || "this giveaway"));
-        setHTML('modalEmailPrompt', config.giveaway.successModalEmailPrompt);
+        setHTML('modalHeader', getTranslatedText(config.giveaway.successModalHeaderText));
+        setText('modalGiveawayName', getTranslatedText(getTranslatedText(config.giveaway.name)));
+        setHTML('modalMainMessage', getTranslatedText(config.giveaway.successModalMainMessage)?.replace('[GiveawayName]', getTranslatedText(getTranslatedText(config.giveaway.name)) || "this giveaway"));
+        setHTML('modalEmailPrompt', getTranslatedText(config.giveaway.successModalEmailPrompt));
     }
 } catch (e) {
     console.error("Err Modal:", e);
@@ -2260,6 +2413,13 @@ try {
             // --- Initial Population & Start Hero Animation ---
             populateSimpleData();
             applyColorOverrides();
+            
+            // Initialize language toggle
+            if (languageToggle) {
+                languageToggle.addEventListener('click', toggleLanguage);
+            }
+            updateLanguageToggle();
+            updatePageContent();
 
             if (heroSection) {
                 setTimeout(() => {

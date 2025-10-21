@@ -86,6 +86,29 @@
         .v2-nav { display: flex; gap: 18px; }
         .v2-nav a { color: var(--muted); font-weight: 500; padding: 8px 12px; border-radius: 10px; border: 1px solid transparent; }
         .v2-nav a:hover { border-color: var(--stroke); color: var(--text); }
+        
+        /* Language Toggle Button */
+        .language-toggle {
+            background: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: 10px;
+            color: var(--text);
+            font-weight: 600;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            min-width: 50px;
+        }
+        .language-toggle:hover {
+            background: var(--primary);
+            color: #0b0d17;
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+        .language-toggle:active {
+            transform: translateY(0);
+        }
 
         /* Hero split with countdown card */
         section#hero { position: relative; min-height: 100vh; min-height: 100svh; display: grid; place-items: center; overflow: hidden; padding-top: clamp(24px, 3vw, 36px); }
@@ -357,9 +380,12 @@
         <div class="wrap bar">
             <a href="#hero" id="navBrandLogo">Giveaway</a>
             <nav class="v2-nav">
-                <a href="#prize-details">Prize</a>
-                <a href="#how-to-enter">How to Enter</a>
-                <a href="#entry-form">Enter</a>
+                <a href="#prize-details" data-translate="nav.prize">Prize</a>
+                <a href="#how-to-enter" data-translate="nav.howToEnter">How to Enter</a>
+                <a href="#entry-form" data-translate="nav.enter">Enter</a>
+                <button id="languageToggle" class="language-toggle" aria-label="Switch language">
+                    <span class="lang-text">EN</span>
+                </button>
             </nav>
         </div>
     </header>
@@ -481,24 +507,24 @@
                             
                             <!-- Verification Gate (shows first) -->
                             <div class="verification-gate" id="verificationGate">
-                                <h3><i class="fas fa-shield-check"></i> Security Verification</h3>
-                                <p>Please complete the verification below to access the entry form</p>
+                                <h3 id="securityVerificationTitle"><i class="fas fa-shield-check"></i> Security Verification</h3>
+                                <p id="securityVerificationText">Please complete the verification below to access the entry form</p>
                                 <div id="turnstileWidget"></div>
                             </div>
                             
                             <form id="giveawayEntryForm">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="fullName">Full Name</label>
+                                    <label for="fullName" id="fullNameLabel">Full Name</label>
                                     <input type="text" id="fullName" name="fullName" placeholder="e.g., Alex Winner" required autocomplete="name">
                                 </div>
                                 <div class="form-group">
-                                    <label for="email">Email</label>
+                                    <label for="email" id="emailLabel">Email</label>
                                     <input type="email" id="email" name="email" placeholder="e.g., alex@example.com" required autocomplete="email">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="phoneNumber">Phone Number</label>
+                                <label for="phoneNumber" id="phoneNumberLabel">Phone Number</label>
                                 <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="e.g., (555) 123-4567" required autocomplete="tel" inputmode="tel">
                             </div>
                             
@@ -631,6 +657,65 @@
         let turnstileToken = null;
         const verificationGate = document.getElementById('verificationGate');
         const giveawayForm = document.getElementById('giveawayEntryForm');
+        
+        // Language management
+        let currentLanguage = localStorage.getItem('language') || 'en';
+        const languageToggle = document.getElementById('languageToggle');
+        
+        // Language helper functions
+        function getCurrentLanguage() {
+            return currentLanguage;
+        }
+        
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            updateLanguageToggle();
+            updatePageContent();
+        }
+        
+        function toggleLanguage() {
+            const newLang = currentLanguage === 'en' ? 'fr' : 'en';
+            setLanguage(newLang);
+            // Hard refresh the page to ensure all content is properly loaded
+            window.location.reload();
+        }
+        
+        function updateLanguageToggle() {
+            if (languageToggle) {
+                const langText = languageToggle.querySelector('.lang-text');
+                if (langText) {
+                    langText.textContent = currentLanguage.toUpperCase();
+                }
+            }
+        }
+        
+        function getTranslatedText(obj, fallback = '') {
+            if (!obj) return fallback;
+            if (typeof obj === 'string') return obj; // Backward compatibility
+            if (typeof obj === 'object' && obj[currentLanguage]) {
+                return obj[currentLanguage];
+            }
+            if (typeof obj === 'object' && obj['en']) {
+                return obj['en']; // Fallback to English
+            }
+            return fallback;
+        }
+        
+        function updatePageContent() {
+            // Update HTML lang attribute
+            document.documentElement.lang = currentLanguage;
+            
+            // Update all content that uses translations
+            populateHero();
+            populatePrize();
+            populateHow();
+            populateEntryForm();
+            populateFooter();
+            populateConsent();
+            populateRules();
+            updateModalContent();
+        }
 
         function setText(id, value) { const el = document.getElementById(id); if (el && value !== undefined) el.textContent = value; }
         function setHTML(id, value) { const el = document.getElementById(id); if (el && value !== undefined) el.innerHTML = value; }
@@ -713,27 +798,44 @@
         })();
 
         // Populate hero
-        (function populateHero(){
+        function populateHero(){
             try {
-                document.title = config.meta?.pageTitle || 'Giveaway';
-                setText('navBrandLogo', config.meta?.navBrandLogoText);
-                setText('heroSubtitle', config.giveaway?.heroSubheadline);
-                setText('heroPromotionDates', config.giveaway?.promotionDates);
+                document.title = getTranslatedText(config.meta?.pageTitle, 'Giveaway');
+                setText('navBrandLogo', getTranslatedText(config.meta?.navBrandLogoText));
+                setText('heroSubtitle', getTranslatedText(config.giveaway?.heroSubheadline));
+                setText('heroPromotionDates', getTranslatedText(config.giveaway?.promotionDates));
                 const hCta = document.getElementById('heroCta');
-                if (hCta && config.giveaway?.heroCtaText) hCta.innerHTML = `${config.giveaway.heroCtaText} <i class="fas fa-arrow-right"></i>`;
+                if (hCta && config.giveaway?.heroCtaText) hCta.innerHTML = `${getTranslatedText(config.giveaway.heroCtaText)} <i class="fas fa-arrow-right"></i>`;
                 const bg = document.getElementById('heroBg');
                 const img = config.giveaway?.heroBackgroundImageUrl;
                 if (bg && img) { bg.style.backgroundImage = `url('${img}')`; }
             } catch(e) { console.error(e); }
-        })();
+        }
 
         // Typewriter
-        (function typeWriter(){
-            const textToType = config.giveaway?.heroHeadline || 'Welcome!'; let i = 0; const speed = 40;
+        function typeWriter(){
+            const textToType = getTranslatedText(config.giveaway?.heroHeadline, 'Welcome!'); 
+            let i = 0; 
+            const speed = 40;
             if (!heroTitleElement) return;
-            heroTitleElement.innerHTML = ''; heroTitleElement.style.opacity = '1';
-            (function type(){ if (i < textToType.length) { if (textToType.charAt(i) === '<') { const tagEnd = textToType.indexOf('>', i); if (tagEnd !== -1) { heroTitleElement.innerHTML += textToType.substring(i, tagEnd + 1); i = tagEnd; } } else { heroTitleElement.innerHTML += textToType.charAt(i); } i++; setTimeout(type, speed + Math.random() * 20 - 10); } })();
-        })();
+            heroTitleElement.innerHTML = ''; 
+            heroTitleElement.style.opacity = '1';
+            (function type(){ 
+                if (i < textToType.length) { 
+                    if (textToType.charAt(i) === '<') { 
+                        const tagEnd = textToType.indexOf('>', i); 
+                        if (tagEnd !== -1) { 
+                            heroTitleElement.innerHTML += textToType.substring(i, tagEnd + 1); 
+                            i = tagEnd; 
+                        } 
+                    } else { 
+                        heroTitleElement.innerHTML += textToType.charAt(i); 
+                    } 
+                    i++; 
+                    setTimeout(type, speed + Math.random() * 20 - 10); 
+                } 
+            })();
+        }
 
         // Countdown
         (function startCountdown(){
@@ -767,19 +869,19 @@
         })();
 
         // Prize population
-        (function populatePrize(){
+        function populatePrize(){
             try {
                 if (!config.prize) return;
-                setText('prizeName', config.prize.name);
+                setText('prizeName', getTranslatedText(config.prize.name));
                 // Value badge: set both amount and keep small label if present
                 const valueBadge = document.getElementById('prizeValue');
                 if (valueBadge) {
-                    const amt = config.prize.value || '';
+                    const amt = getTranslatedText(config.prize.value, '');
                     valueBadge.innerHTML = `<span>${amt}</span>`;
                 }
-                setHTML('prizeDescription', config.prize.description);
+                setHTML('prizeDescription', getTranslatedText(config.prize.description));
                 const limited = document.getElementById('prizeLimitedOffer');
-                if (limited) limited.textContent = config.prize.limitedTimeOfferText || 'Limited';
+                if (limited) limited.textContent = getTranslatedText(config.prize.limitedTimeOfferText, 'Limited');
 
                 // Punchlines from config.giveaway (fallbacks if missing)
                 if (config.giveaway) {
@@ -793,9 +895,9 @@
                 const ticker = document.getElementById('prizeTickerTrack');
                 if (ticker) {
                     const parts = [];
-                    if (config.giveaway?.name) parts.push(config.giveaway.name);
-                    if (config.prize?.value) parts.push(config.prize.value + ' Value');
-                    if (config.prize?.ctaButtonText) parts.push(config.prize.ctaButtonText);
+                    if (config.giveaway?.name) parts.push(getTranslatedText(config.giveaway.name));
+                    if (config.prize?.value) parts.push(getTranslatedText(config.prize.value) + ' Value');
+                    if (config.prize?.ctaButtonText) parts.push(getTranslatedText(config.prize.ctaButtonText));
                     // Repeat to fill width
                     const msg = parts.filter(Boolean).join(' • ');
                     ticker.textContent = `${msg} • ${msg} • ${msg} • ${msg}`;
@@ -807,7 +909,7 @@
                     incList.innerHTML = '';
                     config.prize.includedItems.forEach(it => {
                         const li = document.createElement('li');
-                        li.innerHTML = `<i class="${it.icon||'fas fa-check'}"></i> <span>${it.text}</span>`;
+                        li.innerHTML = `<i class="${it.icon||'fas fa-check'}"></i> <span>${getTranslatedText(it.text)}</span>`;
                         incList.appendChild(li);
                     });
                 }
@@ -828,7 +930,7 @@
                     thumbsC.innerHTML = '';
                     images.forEach((img, idx) => {
                         const d = document.createElement('div'); d.className = 'thumb' + (idx===0 ? ' active' : '');
-                        d.innerHTML = `<img src="${img.src}" alt="${img.alt||'Thumb'}">`;
+                        d.innerHTML = `<img src="${img.src}" alt="${getTranslatedText(img.alt, 'Thumb')}">`;
                         d.addEventListener('click', () => {
                             document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
                             d.classList.add('active');
@@ -838,9 +940,10 @@
                     });
                 }
 
-                const pCta = document.getElementById('prizeCta'); if (pCta && config.prize.ctaButtonText) pCta.innerHTML = `${config.prize.ctaButtonText} <i class=\"fas fa-gift\"></i>`;
+                const pCta = document.getElementById('prizeCta'); 
+                if (pCta && config.prize.ctaButtonText) pCta.innerHTML = `${getTranslatedText(config.prize.ctaButtonText)} <i class=\"fas fa-gift\"></i>`;
             } catch(e) { console.error('Prize error', e); }
-        })();
+        }
 
         // Stage parallax tilt
         (function tilt(){
@@ -862,7 +965,7 @@
         })();
 
         // How to enter
-        (function populateHow(){
+        function populateHow(){
             try {
                 const stepsC = document.getElementById('howToEnterSteps');
                 const howtoBg = document.getElementById('howtoBg');
@@ -880,7 +983,7 @@
                     config.howToEnter.steps.forEach((s, idx) => {
                         const card = document.createElement('div');
                         card.className = 'step-card';
-                        card.innerHTML = `<i class="${s.icon||'fas fa-info-circle'}"></i><h3>${s.title}</h3><p>${s.description}</p>`;
+                        card.innerHTML = `<i class="${s.icon||'fas fa-info-circle'}"></i><h3>${getTranslatedText(s.title)}</h3><p>${getTranslatedText(s.description)}</p>`;
                         stepsC.appendChild(card);
                     });
                 }
@@ -890,12 +993,12 @@
                     config.howToEnter.highlights.forEach(h => {
                         const li = document.createElement('li');
                         li.className = 'highlight-item';
-                        li.innerHTML = `<i class="${h.icon||'fas fa-star'}"></i> <span>${h.text}</span>`;
+                        li.innerHTML = `<i class="${h.icon||'fas fa-star'}"></i> <span>${getTranslatedText(h.text)}</span>`;
                         hlC.appendChild(li);
                     });
                 }
             } catch(e){ console.error(e);} 
-        })();
+        }
 
         // Populate Entry Form Image Panel
         try {
@@ -915,26 +1018,86 @@
         }
 
         // Footer population (new footer API)
-        (function populateFooter(){ try {
-            const fc = config.footerContact || {}; const meta = config.meta || {};
-            const orgLogo = document.getElementById('footerNewOrganizerLogo'); if (orgLogo && fc.organizerLogoUrl) { orgLogo.src = fc.organizerLogoUrl; orgLogo.alt = fc.organizerName || 'Organizer'; }
-            const agentShot = document.getElementById('footerAgentHeadshot'); if (agentShot && fc.organizerLogoUrl) { agentShot.src = fc.organizerLogoUrl; agentShot.alt = fc.organizerName || 'Organizer Headshot'; }
-            const secLogo = document.getElementById('footerNewSecondaryLogo'); if (secLogo && fc.secondaryLogoUrl) { secLogo.src = fc.secondaryLogoUrl; secLogo.alt = fc.secondaryLogoAlt || 'Secondary'; }
-            setText('newFooterBrokerageName', fc.brokerageName || '');
-            const addr = document.getElementById('newFooterAddress'); if (addr && fc.address) addr.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${fc.address}`;
-            const social = document.getElementById('newFooterSocialIcons'); if (social && fc.social) { social.innerHTML = ''; const icons = { facebook:'fab fa-facebook-f', instagram:'fab fa-instagram', twitter:'fab fa-twitter', pinterest:'fab fa-pinterest-p'}; for (const k in fc.social) { const a = document.createElement('a'); a.href = fc.social[k]; a.target = '_blank'; a.rel='noopener noreferrer'; a.setAttribute('aria-label', k); a.innerHTML = `<i class="${icons[k]||'fas fa-link'}"></i>`; social.appendChild(a);} }
-            setText('newFooterAgentName', fc.agentContact?.name); setText('newFooterAgentTitle', fc.agentContact?.title); const pL = document.getElementById('newFooterAgentPhoneLink'); if (pL && fc.agentContact?.phone) { pL.href = `tel:${fc.agentContact.phone.replace(/\D/g,'')}`; pL.textContent = fc.agentContact.phone; } const eL = document.getElementById('newFooterAgentEmailLink'); if (eL && fc.agentContact?.email) { eL.href = `mailto:${fc.agentContact.email}`; eL.textContent = fc.agentContact.email; }
-            const year = new Date().getFullYear(); const owner = fc.copyrightOwner || fc.organizerName || '';
-            setText('newFooterCopyrightText', `© ${year} ${owner}. All Rights Reserved.`);
-            setHref('newFooterPrivacyLink', meta.privacyPolicyLink || '#');
-            setText('footerTopDisclaimer', fc.footerDisclaimer || '');
-        } catch(e){ console.error(e); }})();
+        function populateFooter(){ 
+            try {
+                const fc = config.footerContact || {}; 
+                const meta = config.meta || {};
+                const orgLogo = document.getElementById('footerNewOrganizerLogo'); 
+                if (orgLogo && fc.organizerLogoUrl) { 
+                    orgLogo.src = fc.organizerLogoUrl; 
+                    orgLogo.alt = fc.organizerName || 'Organizer'; 
+                }
+                const agentShot = document.getElementById('footerAgentHeadshot'); 
+                if (agentShot && fc.organizerLogoUrl) { 
+                    agentShot.src = fc.organizerLogoUrl; 
+                    agentShot.alt = fc.organizerName || 'Organizer Headshot'; 
+                }
+                const secLogo = document.getElementById('footerNewSecondaryLogo'); 
+                if (secLogo && fc.secondaryLogoUrl) { 
+                    secLogo.src = fc.secondaryLogoUrl; 
+                    secLogo.alt = getTranslatedText(fc.secondaryLogoAlt, 'Secondary'); 
+                }
+                setText('newFooterBrokerageName', fc.brokerageName || '');
+                const addr = document.getElementById('newFooterAddress'); 
+                if (addr && fc.address) addr.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${fc.address}`;
+                const social = document.getElementById('newFooterSocialIcons'); 
+                if (social && fc.social) { 
+                    social.innerHTML = ''; 
+                    const icons = { facebook:'fab fa-facebook-f', instagram:'fab fa-instagram', twitter:'fab fa-twitter', pinterest:'fab fa-pinterest-p'}; 
+                    for (const k in fc.social) { 
+                        const a = document.createElement('a'); 
+                        a.href = fc.social[k]; 
+                        a.target = '_blank'; 
+                        a.rel='noopener noreferrer'; 
+                        a.setAttribute('aria-label', k); 
+                        a.innerHTML = `<i class="${icons[k]||'fas fa-link'}"></i>`; 
+                        social.appendChild(a);
+                    } 
+                }
+                setText('newFooterAgentName', fc.agentContact?.name); 
+                setText('newFooterAgentTitle', getTranslatedText(fc.agentContact?.title)); 
+                const pL = document.getElementById('newFooterAgentPhoneLink'); 
+                if (pL && fc.agentContact?.phone) { 
+                    pL.href = `tel:${fc.agentContact.phone.replace(/\D/g,'')}`; 
+                    pL.textContent = fc.agentContact.phone; 
+                } 
+                const eL = document.getElementById('newFooterAgentEmailLink'); 
+                if (eL && fc.agentContact?.email) { 
+                    eL.href = `mailto:${fc.agentContact.email}`; 
+                    eL.textContent = fc.agentContact.email; 
+                }
+                const year = new Date().getFullYear(); 
+                const owner = fc.copyrightOwner || fc.organizerName || '';
+                setText('newFooterCopyrightText', `© ${year} ${owner}. All Rights Reserved.`);
+                setHref('newFooterPrivacyLink', meta.privacyPolicyLink || '#');
+                setText('footerTopDisclaimer', getTranslatedText(fc.footerDisclaimer, ''));
+            } catch(e){ console.error(e); }
+        }
 
         // Consent label
-        (function populateConsent(){ const consentLabel = document.getElementById('contactConsentLabel'); if (!consentLabel) return; const brokerageName = config.footerContact?.brokerageName || 'the brokerage'; const privacyPolicyLink = config.meta?.privacyPolicyLink || '#'; consentLabel.innerHTML = `I agree to be contacted by ${brokerageName} via call, email, and text. To opt-out, you can reply 'stop' at any time or click the unsubscribe link in the emails. Message and data rates may apply. <a href="${privacyPolicyLink}" target="_blank" style="color: var(--primary); text-decoration: underline;">Privacy Policy</a>.`; })();
+        function populateConsent(){ 
+            const consentLabel = document.getElementById('contactConsentLabel'); 
+            if (!consentLabel) return; 
+            const brokerageName = config.footerContact?.brokerageName || 'the brokerage'; 
+            const privacyPolicyLink = config.meta?.privacyPolicyLink || '#'; 
+            
+            const consentText = currentLanguage === 'fr' 
+                ? `J'accepte d'être contacté par ${brokerageName} par téléphone, courriel et texto. Pour vous désabonner, vous pouvez répondre 'stop' à tout moment ou cliquer sur le lien de désabonnement dans les courriels. Des frais de message et de données peuvent s'appliquer. <a href="${privacyPolicyLink}" target="_blank" style="color: var(--primary); text-decoration: underline;">Politique de confidentialité</a>.`
+                : `I agree to be contacted by ${brokerageName} via call, email, and text. To opt-out, you can reply 'stop' at any time or click the unsubscribe link in the emails. Message and data rates may apply. <a href="${privacyPolicyLink}" target="_blank" style="color: var(--primary); text-decoration: underline;">Privacy Policy</a>.`;
+            
+            consentLabel.innerHTML = consentText; 
+        }
 
         // Entry form copy
-        (function populateEntryForm(){ try { if (!config.entryForm) return; setText('entryFormSubtitle', config.entryForm.subtitle); setText('entryFormCount', config.entryForm.entryCountText); const subBtnTxt = submitButton?.querySelector('.button-text'); if (subBtnTxt) subBtnTxt.textContent = 'Next'; } catch(e){ console.error(e);} })();
+        function populateEntryForm(){ 
+            try { 
+                if (!config.entryForm) return; 
+                setText('entryFormSubtitle', getTranslatedText(config.entryForm.subtitle)); 
+                setText('entryFormCount', getTranslatedText(config.entryForm.entryCountText)); 
+                const subBtnTxt = submitButton?.querySelector('.button-text'); 
+                if (subBtnTxt) subBtnTxt.textContent = 'Next'; 
+            } catch(e){ console.error(e);} 
+        }
 
         // Question Modal (reuse IDs/logic contracts)
         const questionModalOverlay = document.getElementById('questionModalOverlay');
@@ -1049,12 +1212,22 @@
         const rulesTicker = document.getElementById('rulesTickerTrack');
         if (rulesTicker) {
             const parts = [];
-            if (config.giveaway?.name) parts.push(config.giveaway.name);
-            if (config.prize?.value) parts.push((config.prize.value + ' Value').trim());
-            if (config.prize?.ctaButtonText) parts.push(config.prize.ctaButtonText);
+            if (config.giveaway?.name) parts.push(getTranslatedText(config.giveaway.name));
+            if (config.prize?.value) parts.push((getTranslatedText(config.prize.value) + ' Value').trim());
+            if (config.prize?.ctaButtonText) parts.push(getTranslatedText(config.prize.ctaButtonText));
             const msg = parts.filter(Boolean).join(' • ');
             rulesTicker.textContent = `${msg} • ${msg} • ${msg} • ${msg}`;
         }
+        
+        // Language toggle event listener
+        if (languageToggle) {
+            languageToggle.addEventListener('click', toggleLanguage);
+        }
+        
+        // Initialize page content
+        updateLanguageToggle();
+        updatePageContent();
+        typeWriter();
     });
     </script>
 </body>

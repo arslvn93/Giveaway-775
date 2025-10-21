@@ -115,6 +115,32 @@ fbq('track', 'CompleteRegistration');
             max-width: 600px;
             width: 90%;
         }
+        .thank-you-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1rem;
+        }
+        .language-toggle {
+            background: var(--card-bg-color-theme);
+            border: 1px solid var(--text-color-light-theme);
+            border-radius: var(--border-radius-s);
+            color: var(--text-color-dark-theme);
+            font-weight: 600;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            min-width: 50px;
+        }
+        .language-toggle:hover {
+            background: var(--primary-color-theme);
+            color: #ffffff;
+            border-color: var(--primary-color-theme);
+            transform: translateY(-1px);
+        }
+        .language-toggle:active {
+            transform: translateY(0);
+        }
         #thankYouHeader {
             font-family: 'Playfair Display', sans-serif;
             font-size: clamp(1.8rem, 5vw, 2.5rem);
@@ -200,6 +226,11 @@ fbq('track', 'CompleteRegistration');
 <canvas id="confetti-canvas"></canvas>
 <body id="thankYouPageBody">
     <div class="container">
+        <div class="thank-you-header">
+            <button id="languageToggle" class="language-toggle" aria-label="Switch language">
+                <span class="lang-text">EN</span>
+            </button>
+        </div>
         <h1 id="thankYouHeader"></h1>
         <p id="thankYouMainMessage"></p>
         <p id="thankYouSocialPrompt"></p>
@@ -216,6 +247,58 @@ fbq('track', 'CompleteRegistration');
                 document.getElementById('thankYouHeader').textContent = "Thank You!";
                 document.getElementById('thankYouMainMessage').textContent = "Your submission was successful.";
                 return;
+            }
+            
+            // Language management
+            let currentLanguage = localStorage.getItem('language') || 'en';
+            const languageToggle = document.getElementById('languageToggle');
+            
+            // Language helper functions
+            function getCurrentLanguage() {
+                return currentLanguage;
+            }
+            
+            function setLanguage(lang) {
+                currentLanguage = lang;
+                localStorage.setItem('language', lang);
+                updateLanguageToggle();
+                updatePageContent();
+            }
+            
+            function toggleLanguage() {
+                const newLang = currentLanguage === 'en' ? 'fr' : 'en';
+                setLanguage(newLang);
+                // Hard refresh the page to ensure all content is properly loaded
+                window.location.reload();
+            }
+            
+            function updateLanguageToggle() {
+                if (languageToggle) {
+                    const langText = languageToggle.querySelector('.lang-text');
+                    if (langText) {
+                        langText.textContent = currentLanguage.toUpperCase();
+                    }
+                }
+            }
+            
+            function getTranslatedText(obj, fallback = '') {
+                if (!obj) return fallback;
+                if (typeof obj === 'string') return obj; // Backward compatibility
+                if (typeof obj === 'object' && obj[currentLanguage]) {
+                    return obj[currentLanguage];
+                }
+                if (typeof obj === 'object' && obj['en']) {
+                    return obj['en']; // Fallback to English
+                }
+                return fallback;
+            }
+            
+            function updatePageContent() {
+                // Update HTML lang attribute
+                document.documentElement.lang = currentLanguage;
+                
+                // Update all content that uses translations
+                populateThankYouContent();
             }
 
 const confettiCanvas = document.getElementById('confetti-canvas');
@@ -278,10 +361,10 @@ const confettiCanvas = document.getElementById('confetti-canvas');
 
             function populateThankYouContent() {
                 const tyConfig = config.thankYouPage;
-                document.title = tyConfig.pageTitle || "Thank You";
-                document.getElementById('thankYouHeader').innerHTML = tyConfig.headerText || "Thank You!";
-                document.getElementById('thankYouMainMessage').innerHTML = tyConfig.mainMessage || "Your entry has been submitted.";
-                document.getElementById('thankYouSocialPrompt').innerHTML = tyConfig.socialPromptText || "Follow us on social media!";
+                document.title = getTranslatedText(tyConfig.pageTitle, "Thank You");
+                document.getElementById('thankYouHeader').innerHTML = getTranslatedText(tyConfig.headerText, "Thank You!");
+                document.getElementById('thankYouMainMessage').innerHTML = getTranslatedText(tyConfig.mainMessage, "Your entry has been submitted.");
+                document.getElementById('thankYouSocialPrompt').innerHTML = getTranslatedText(tyConfig.socialPromptText, "Follow us on social media!");
             }
 
             function populateThankYouSocialIcons() {
@@ -319,8 +402,15 @@ const confettiCanvas = document.getElementById('confetti-canvas');
                 }
             }
 
+            // Language toggle event listener
+            if (languageToggle) {
+                languageToggle.addEventListener('click', toggleLanguage);
+            }
+            
+            // Initialize page content
+            updateLanguageToggle();
+            updatePageContent();
             applyThankYouTheme();
-            populateThankYouContent();
             populateThankYouSocialIcons();
             triggerConfetti(); // Trigger confetti after content is populated
         });

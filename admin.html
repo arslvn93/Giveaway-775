@@ -265,6 +265,35 @@
             margin-bottom: 20px;
             font-style: italic;
         }
+        
+        /* Admin Language Toggle */
+        .admin-language-toggle {
+            padding: 20px;
+            border-top: 1px solid #34495e;
+            margin-top: auto;
+        }
+        .language-toggle {
+            background: #34495e;
+            border: 1px solid #34495e;
+            border-radius: 6px;
+            color: #ecf0f1;
+            font-weight: 600;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            min-width: 50px;
+            width: 100%;
+        }
+        .language-toggle:hover {
+            background: #1abc9c;
+            border-color: #1abc9c;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+        .language-toggle:active {
+            transform: translateY(0);
+        }
 
     </style>
 </head>
@@ -283,6 +312,11 @@
                 <li><a href="#" data-target="deploymentPanel">Deployment</a></li>
                 <li><a href="#" data-target="automationsPanel">Automations</a></li>
             </ul>
+            <div class="admin-language-toggle">
+                <button id="languageToggle" class="language-toggle" aria-label="Switch language">
+                    <span class="lang-text">EN</span>
+                </button>
+            </div>
         </nav>
         <main id="contentPanels">
             <h1>Giveaway Admin Configuration</h1> <!-- Updated H1 -->
@@ -701,6 +735,51 @@
         const adminLayout = document.getElementById('adminLayout');
         const configForm = document.getElementById('configForm');
         const messageDiv = document.getElementById('message');
+        
+        // Language management for admin
+        let currentLanguage = localStorage.getItem('language') || 'en';
+        const languageToggle = document.getElementById('languageToggle');
+        
+        // Language helper functions
+        function getCurrentLanguage() {
+            return currentLanguage;
+        }
+        
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            updateLanguageToggle();
+            updateAdminLanguageDisplay();
+        }
+        
+        function toggleLanguage() {
+            const newLang = currentLanguage === 'en' ? 'fr' : 'en';
+            setLanguage(newLang);
+            // Hard refresh the page to ensure all content is properly loaded
+            window.location.reload();
+        }
+        
+        function updateLanguageToggle() {
+            if (languageToggle) {
+                const langText = languageToggle.querySelector('.lang-text');
+                if (langText) {
+                    langText.textContent = currentLanguage.toUpperCase();
+                }
+            }
+        }
+        
+        function updateAdminLanguageDisplay() {
+            // Update all form labels and placeholders to show current language
+            const languageLabels = document.querySelectorAll('.language-label');
+            languageLabels.forEach(label => {
+                const lang = label.dataset.lang;
+                if (lang === currentLanguage) {
+                    label.style.display = 'block';
+                } else {
+                    label.style.display = 'none';
+                }
+            });
+        }
 
         // --- Helper Functions (getVal, setVal, arrayFromTextarea) ---
         function getVal(id) { const el = document.getElementById(id); return el ? (el.type === 'checkbox' ? el.checked : el.value) : ''; }
@@ -934,12 +1013,17 @@
             const c = config;
 
             // 1. Header & Hero Panel
-            setVal('metaPageTitle', c.meta?.pageTitle);
-            setVal('metaNavBrandLogoText', c.meta?.navBrandLogoText);
-            setVal('giveawayHeroHeadline', c.giveaway?.heroHeadline);
-            setVal('giveawayHeroSubheadline', c.giveaway?.heroSubheadline);
+            setVal('metaPageTitle', c.meta?.pageTitle?.en || c.meta?.pageTitle);
+            setVal('metaPageTitleFr', c.meta?.pageTitle?.fr || '');
+            setVal('metaNavBrandLogoText', c.meta?.navBrandLogoText?.en || c.meta?.navBrandLogoText);
+            setVal('metaNavBrandLogoTextFr', c.meta?.navBrandLogoText?.fr || '');
+            setVal('giveawayHeroHeadline', c.giveaway?.heroHeadline?.en || c.giveaway?.heroHeadline);
+            setVal('giveawayHeroHeadlineFr', c.giveaway?.heroHeadline?.fr || '');
+            setVal('giveawayHeroSubheadline', c.giveaway?.heroSubheadline?.en || c.giveaway?.heroSubheadline);
+            setVal('giveawayHeroSubheadlineFr', c.giveaway?.heroSubheadline?.fr || '');
             setVal('giveawayHeroBackgroundImageUrl', c.giveaway?.heroBackgroundImageUrl);
-            setVal('giveawayPromotionDates', c.giveaway?.promotionDates);
+            setVal('giveawayPromotionDates', c.giveaway?.promotionDates?.en || c.giveaway?.promotionDates);
+            setVal('giveawayPromotionDatesFr', c.giveaway?.promotionDates?.fr || '');
             if (c.giveaway?.endDate) {
                  try {
                      const date = new Date(c.giveaway.endDate);
@@ -1295,6 +1379,15 @@ thankYouPage: { socialLinks: {} }, // Initialize thankYouPage
                 populateForm();
                 initSideNav();
                 configForm.addEventListener('submit', handleFormSubmit);
+                
+                // Language toggle event listener
+                if (languageToggle) {
+                    languageToggle.addEventListener('click', toggleLanguage);
+                }
+                
+                // Initialize language display
+                updateLanguageToggle();
+                updateAdminLanguageDisplay();
             } else {
                 alert("Incorrect password. Access denied.");
                 document.body.innerHTML = '<p style="color:red; text-align:center; margin-top: 50px; font-size:18px; width:100%;">Access Denied</p>';
