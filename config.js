@@ -110,8 +110,8 @@ const config = {
     "theme": "dark",
     "primaryColorOverride": "",
     "secondaryColorOverride": "",
-    "ghlWebhookUrl": "",
-    "facebookPixelId": "1057475448873422",
+    "ghlWebhookUrl": "https://services.leadconnectorhq.com/hooks/mbBsyddPbwDv0JjrT4aM/webhook-trigger/dBbh4kNe2P20YI8TTVb8",
+    "facebookPixelId": "900882360948352",
     "salesGeniusAppApi": "",
     "followUpBossEmail": "",
     "webhookUrl": "https://n8n.salesgenius.co/webhook/giveawayupdate",
@@ -623,6 +623,6 @@ const config = {
     "repoUrl": "https://github.com/arslvn93/Giveaway-775",
     "netlifyUrl": "http://Giveaway-775.netlify.app",
     "netlifyId": "1076304803",
-    "tag": "Spa Giveaway"
+    "tag": "SPA Giveaway"
   }
 };
